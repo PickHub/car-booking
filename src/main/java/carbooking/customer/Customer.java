@@ -11,6 +11,12 @@ public interface Customer {
 
     public void setBalance(float balance);
 
+    public String getName();
+
+    public String getEmail();
+
+    public String getPassword();
+
     public String getId();
 
     public Location locate();

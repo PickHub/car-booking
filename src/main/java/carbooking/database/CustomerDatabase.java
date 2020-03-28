@@ -14,4 +14,7 @@ public interface CustomerDatabase {
 
     public void removeCustomer(String id);
 
+    public Boolean addCustomer(String email, String password, String name);
+
+    public Boolean checkPassword(String email, String password);
 }

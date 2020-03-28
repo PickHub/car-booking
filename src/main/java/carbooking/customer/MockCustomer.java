@@ -11,11 +11,13 @@ public class MockCustomer implements Customer {
     private String id;
     private String email;
     private String password;
+    private String name;
     private double balance;
 
-    public MockCustomer(String email, String password) {
+    public MockCustomer(String email, String password, String name) {
         this.email = email;
         this.password = password;
+        this.name = name;
         this.balance = 0.0;
         this.id = UUID.randomUUID().toString();
     }
@@ -46,6 +48,10 @@ public class MockCustomer implements Customer {
 
     public String getId() {
         return this.id;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public String getID() {

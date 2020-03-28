@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface VehicleDatabase {
 
-    public void addVehicle();
+    public void addVehicle(Vehicle vehicle);
 
-    public void removeVehicle(int id);
+    public void removeVehicle(String id);
 
     public List<Vehicle> getAllVehicles();
 

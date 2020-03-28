@@ -1,6 +1,7 @@
 package carbooking.database;
 
 import carbooking.customer.Customer;
+import carbooking.customer.MockCustomer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,31 @@ public class SimpleCustomerData implements CustomerDatabase {
         throw new NoSuchElementException();
     }
 
+    public Boolean addCustomer(String email, String password, String name) {
+        for(Customer existingCustomer : customerData) {
+            if (existingCustomer.getEmail().equals(email)) {
+                return false;
+            }
+        }
+
+        Customer newCustomer = new MockCustomer(email, password, name);
+        customerData.add(newCustomer);
+        return true;
+    }
+
+    public Boolean checkPassword(String email, String password) {
+        for (Customer existingCustomer : customerData) {
+            if (existingCustomer.getEmail().equals(email)) {
+                if (existingCustomer.getPassword().equals(password)) {
+                    return true;
+                } else {
+                    return false;
+                }
+
+            }
+        }
+        return false;
+    }
 
     public void removeCustomer(String id) {
 
