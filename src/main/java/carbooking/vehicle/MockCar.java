@@ -15,7 +15,6 @@ public class MockCar implements Vehicle {
     private AtomicBoolean isReserved;
     private AtomicBoolean isRented;
     private long startOfRent;
-    private Location location;
     private String id;
     private String customerUsername;
 
@@ -50,8 +49,7 @@ public class MockCar implements Vehicle {
     }
 
     public void startRental(String customerUsername) throws VehicleAlreadyRentedException {
-
-        Boolean expectedValue = this.isReserved.compareAndSet(false, true);
+        Boolean expectedValue = this.isRented.compareAndSet(false, true);
         if (!expectedValue) {
             throw new VehicleAlreadyRentedException();
         }
@@ -82,9 +80,9 @@ public class MockCar implements Vehicle {
         JSONObject json = new JSONObject();
         json.put("car_id", id);
         json.put("price/min", rentalPricePerMinute);
+        Location location = locate();
         json.put("latitude", location.getLatitude());
         json.put("longitude", location.getLongitude());
-
         return json;
     }
 

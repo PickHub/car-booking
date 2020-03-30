@@ -43,7 +43,6 @@ public class SimpleVehicleData implements VehicleDatabase {
         for (Vehicle vehicle : vehicleData) {
             if (!vehicle.getIsRented() && !vehicle.getIsReserved()) {
                 double distance = vehicle.locate().calculateDistance(customerLocation);
-
                 if(distance <= radius) {
                     availableCars.put(vehicle.toJson());
                 }

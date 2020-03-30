@@ -59,10 +59,8 @@ public class RentalHandler extends ParentHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String requestMethod = exchange.getRequestMethod();
         String[] requestUri = String.valueOf(exchange.getRequestURI()).split("/");
-
+        System.out.println("URI: " + String.valueOf(exchange.getRequestURI()));
         if ("GET".equals(requestMethod)) {
-            System.out.println("GET handler");
-            System.out.println("uri: " + String.valueOf(exchange.getRequestURI()));
             if (requestUri.length == 3) {
                 String rentRequestType = requestUri[2];
                 Headers requestHeader = exchange.getRequestHeaders();
@@ -83,7 +81,6 @@ public class RentalHandler extends ParentHandler {
                     if(requestHeader.containsKey(CAR_ID)) {
                         try {
                             vehicleData.blockVehicle(requestHeader.get(CAR_ID).get(0));
-                            System.out.println("get 0: " + requestHeader.get(CAR_ID).get(0));
                             sendResponse(exchange, SUCCESS_MESSAGE, HTTP_STATUS_OK);
                             return;
                         } catch (IdNotFoundException e) {
@@ -139,22 +136,6 @@ public class RentalHandler extends ParentHandler {
                         return;
                     }
                 }
-
-          /*      if (jsonBody.has(EMAIL) && jsonBody.has(PASSWORD) && jsonBody.has(NAME)) {
-                    String email = String.valueOf(jsonBody.get(EMAIL));
-                    String password = String.valueOf(jsonBody.get(PASSWORD));
-                    String name = String.valueOf(jsonBody.get(NAME));
-
-                    if (!customerData.addCustomer(email, password, name)) {
-                        sendResponse(exchange, EMAIL_RESPONSE, HTTP_STATUS_CONFLICT);
-                        return;
-                    }
-
-
-                } else {
-                    sendResponse(exchange, RESPONSE_PARAMETER, HTTP_STATUS_BAD_REQUEST);
-                    return;
-                }*/
                 sendResponse(exchange, RESPONSE_SUCCESS, HTTP_STATUS_OK);
                 return;
             }
