@@ -2,6 +2,8 @@ package carbooking.customer;
 
 import carbooking.utils.Location;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.UUID;
 
 /**
@@ -14,7 +16,9 @@ public class MockCustomer implements Customer {
     private String name;
     private double balance;
 
-    public MockCustomer(String email, String password, String name) {
+    public MockCustomer(String email, String password, String name) throws AddressException {
+        InternetAddress emailAddr = new InternetAddress(email);
+        emailAddr.validate();
         this.email = email;
         this.password = password;
         this.name = name;

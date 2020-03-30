@@ -2,6 +2,7 @@ package carbooking.database;
 
 import carbooking.customer.Customer;
 
+import javax.mail.internet.AddressException;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public interface CustomerDatabase {
 
     public void removeCustomer(String id);
 
-    public Boolean addCustomer(String email, String password, String name);
+    public void addCustomer(String email, String password, String name) throws AddressException;
 
     public Boolean checkPassword(String email, String password);
 

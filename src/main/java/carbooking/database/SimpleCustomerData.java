@@ -3,6 +3,7 @@ package carbooking.database;
 import carbooking.customer.Customer;
 import carbooking.customer.MockCustomer;
 
+import javax.mail.internet.AddressException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,16 +51,15 @@ public class SimpleCustomerData implements CustomerDatabase {
     }
 
 
-    public Boolean addCustomer(String email, String password, String name) {
+    public void addCustomer(String email, String password, String name) throws AddressException {
         for(Customer existingCustomer : customerData) {
             if (existingCustomer.getEmail().equals(email)) {
-                return false;
+                throw new AddressException();
             }
         }
 
         Customer newCustomer = new MockCustomer(email, password, name);
         customerData.add(newCustomer);
-        return true;
     }
 
     public Boolean checkPassword(String email, String password) {

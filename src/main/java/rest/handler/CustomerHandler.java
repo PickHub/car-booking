@@ -4,12 +4,16 @@ import carbooking.database.CustomerDatabase;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONObject;
+
+import javax.mail.internet.AddressException;
 import java.io.*;
 
 /**
  * Created by Daniel Handloser on 27.03.2020.
  */
 public class CustomerHandler extends ParentHandler {
+    public static final String INVALID_EMAIL_MESSAGE = "This email address is already in use or not valid. Cannot create account.";
+    public static final String MISSING_PARAM_MESSAGE = "Missing required parameter: name, e-mail and/or password.";
     CustomerDatabase customerData;
 
     public CustomerHandler(CustomerDatabase customerData) {
@@ -28,15 +32,17 @@ public class CustomerHandler extends ParentHandler {
                 String password = String.valueOf(jsonBody.get("password"));
                 String name = String.valueOf(jsonBody.get("name"));
 
-                if(!customerData.addCustomer(email, password, name)) {
-                    sendResponse(exchange,"This email address is already in use. Cannot create account.", 400);
+                try {
+                    customerData.addCustomer(email, password, name);
+                }
+                catch(AddressException e) {
+                    sendResponse(exchange, INVALID_EMAIL_MESSAGE, 400);
                     return;
                 }
 
 
             } else {
-                String response = "Missing required parameter: name, e-mail and/or password.";
-                sendResponse(exchange, response, 400);
+                sendResponse(exchange, MISSING_PARAM_MESSAGE, 400);
                 return;
             }
             sendResponse(exchange, "Successfully added customer account.", 200);
