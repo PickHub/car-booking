@@ -25,15 +25,6 @@ public class HttpEndpoint {
         this.vehicleData = vehicleData;
         this.port = port;
     }
-    public static void main(String[] args) throws Exception {
-        //TODO port in cmd
-        int port = 8000;
-        CustomerDatabase customerData = new SimpleCustomerData();
-        VehicleDatabase vehicleData = new SimpleVehicleData();
-        HttpEndpoint httpServer = new HttpEndpoint(customerData, vehicleData, port);
-        httpServer.startHttpServer();
-
-    }
 
     public void startHttpServer() {
         HttpServer server = null;
@@ -43,9 +34,9 @@ public class HttpEndpoint {
             throw new RuntimeException(e);
         }
         server.createContext("/customer", new CustomerHandler(customerData));
-        HttpContext rentContext = server.createContext("/rent", new RentalHandler(customerData));
+        HttpContext rentContext = server.createContext("/rent", new RentalHandler(customerData, vehicleData));
         rentContext.setAuthenticator(new CustomerAuthenticator("rent", customerData));
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(null);
         server.start();
     }
 

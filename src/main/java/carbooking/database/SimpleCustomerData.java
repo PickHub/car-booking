@@ -33,6 +33,23 @@ public class SimpleCustomerData implements CustomerDatabase {
         throw new NoSuchElementException();
     }
 
+    public void chargeCustomer(String requestUsername, double rentalCharge) {
+        Customer customer = getCustomerByUsername(requestUsername);
+        customer.setBalance((float) (customer.getBalance() - rentalCharge));
+    }
+
+    private Customer getCustomerByUsername(String username) throws NoSuchElementException {
+        for(int i = 0; i < customerData.size(); i++) {
+            Customer currCustomer = customerData.get(i);
+            if (currCustomer.getName() == username) {
+                return currCustomer;
+            }
+        }
+
+        throw new NoSuchElementException();
+    }
+
+
     public Boolean addCustomer(String email, String password, String name) {
         for(Customer existingCustomer : customerData) {
             if (existingCustomer.getEmail().equals(email)) {

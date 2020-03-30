@@ -17,4 +17,6 @@ public interface CustomerDatabase {
     public Boolean addCustomer(String email, String password, String name);
 
     public Boolean checkPassword(String email, String password);
+
+    public void chargeCustomer(String requestingUser, double rentalCharge);
 }
