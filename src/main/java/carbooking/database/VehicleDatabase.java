@@ -12,19 +12,17 @@ import java.util.List;
  */
 public interface VehicleDatabase {
 
-    public void addVehicle(Vehicle vehicle);
+    void addVehicle(Vehicle vehicle);
 
-    public void removeVehicle(String id);
+    void removeVehicle(String id);
 
-    public List<Vehicle> getAllVehicles();
+    JSONArray availableVehicles(double latitude, double longitude, int radius);
 
-    public JSONArray availableVehicles(double latitude, double longitude, int radius);
+    void blockVehicle(String id) throws IdNotFoundException, VehicleAlreadyReservedException;
 
-    public void blockVehicle(String id) throws IdNotFoundException, VehicleAlreadyReservedException;
+    void rentVehicle(String id, String username) throws IdNotFoundException, VehicleAlreadyRentedException;
 
-    public void rentVehicle(String id, String username) throws IdNotFoundException, VehicleAlreadyRentedException;
+    double stopVehicleRent(String vehicleId) throws IdNotFoundException;
 
-    public double stopVehicleRent(String vehicleId) throws IdNotFoundException;
-
-    public Vehicle getVehicleById(String id) throws IdNotFoundException ;
+    Vehicle getVehicleById(String id) throws IdNotFoundException ;
     }

@@ -33,7 +33,7 @@ public class MockCar implements Vehicle {
 
     public void setIsReservedAtomic(boolean bool) throws VehicleAlreadyReservedException {
         if (bool) {
-            Boolean expectedValue = this.isReserved.compareAndSet(false, true);
+            boolean expectedValue = this.isReserved.compareAndSet(false, true);
             if (!expectedValue) {
                 throw new VehicleAlreadyReservedException();
             }
@@ -49,7 +49,7 @@ public class MockCar implements Vehicle {
     }
 
     public void startRental(String customerUsername) throws VehicleAlreadyRentedException {
-        Boolean expectedValue = this.isRented.compareAndSet(false, true);
+        boolean expectedValue = this.isRented.compareAndSet(false, true);
         if (!expectedValue) {
             throw new VehicleAlreadyRentedException();
         }

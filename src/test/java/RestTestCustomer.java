@@ -1,7 +1,3 @@
-/**
- * Created by Daniel Handloser on 30.03.2020.
- */
-
 import carbooking.database.CustomerDatabase;
 import carbooking.database.SimpleCustomerData;
 import carbooking.database.SimpleVehicleData;
@@ -14,11 +10,8 @@ import org.junit.jupiter.api.Test;
 import rest.HttpEndpoint;
 
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
@@ -61,7 +54,7 @@ public class RestTestCustomer {
                 .append("\"name\":\"test\"")
                 .append("}").toString();
 
-        HttpResponse<String> response = requestPOST(json, CUSTOMER_URL);
+        HttpResponse<String> response = requestPOST(json);
         assertEquals(200, response.statusCode());
     }
 
@@ -81,8 +74,8 @@ public class RestTestCustomer {
                 .append("\"name\":\"abc\"")
                 .append("}").toString();
 
-        requestPOST(json_init, CUSTOMER_URL);
-        HttpResponse<String> response = requestPOST(json_duplicate, CUSTOMER_URL);
+        requestPOST(json_init);
+        HttpResponse<String> response = requestPOST(json_duplicate);
         assertEquals(400, response.statusCode());
     }
 
@@ -94,14 +87,14 @@ public class RestTestCustomer {
                 .append("\"email\":\"test@abc.com\",")
                 .append("}").toString();
 
-        HttpResponse<String> response = requestPOST(json, CUSTOMER_URL);
+        HttpResponse<String> response = requestPOST(json);
         assertEquals(400, response.statusCode());
     }
 
-    private HttpResponse<String> requestPOST(String json, String url) throws IOException, InterruptedException {
+    private HttpResponse<String> requestPOST(String json) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-                .uri(URI.create(url))
+                .uri(URI.create(RestTestCustomer.CUSTOMER_URL))
                 .setHeader("User-Agent", "Java HttpClient")
                 .header("Content-Type", "application/json")
                 .build();

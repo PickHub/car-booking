@@ -1,7 +1,5 @@
 package carbooking.customer;
 
-import carbooking.utils.Location;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.util.UUID;
@@ -62,7 +60,4 @@ public class MockCustomer implements Customer {
         return this.id;
     }
 
-    public Location locate() {
-        return new Location(0,0);
-    }
 }

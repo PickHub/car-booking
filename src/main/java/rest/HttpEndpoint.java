@@ -1,14 +1,9 @@
 package rest;
 
-/**
- * Created by Daniel Handloser on 27.03.2020.
- */
 import java.io.*;
 import java.net.InetSocketAddress;
 
 import carbooking.database.CustomerDatabase;
-import carbooking.database.SimpleCustomerData;
-import carbooking.database.SimpleVehicleData;
 import carbooking.database.VehicleDatabase;
 import com.sun.net.httpserver.*;
 import rest.handler.CustomerAuthenticator;

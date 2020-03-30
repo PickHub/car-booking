@@ -33,14 +33,13 @@ public class RestTestRent {
     public static final String AUTHORIZATION = "Authorization";
     public static final String CAR_ID = "car_id";
     private static HttpClient httpClient;
-    private static CustomerDatabase customerData;
     private static VehicleDatabase vehicleData;
     private static String mockCarId;
     private static HttpEndpoint httpServer;
 
     @BeforeAll
     public static void setUp() throws AddressException {
-        customerData = new SimpleCustomerData();
+        CustomerDatabase customerData = new SimpleCustomerData();
         vehicleData = new SimpleVehicleData();
         addMockVehicle(vehicleData);
         addMockCustomer(customerData);
@@ -77,7 +76,7 @@ public class RestTestRent {
     public void testAvailableVehicles() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(RENT_AVAILABLE_URL))
-                .headers(LATITUDE,"0", LONGITUDE,"0", AUTHORIZATION, basicAuth(TEST, TEST))
+                .headers(LATITUDE,"0", LONGITUDE,"0", AUTHORIZATION, basicAuth())
                 .GET()
                 .build();
 
@@ -99,7 +98,7 @@ public class RestTestRent {
     public void testAvailableVehiclesMissingParams() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(RENT_AVAILABLE_URL))
-                .header(AUTHORIZATION, basicAuth(TEST, TEST))
+                .header(AUTHORIZATION, basicAuth())
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(CODE_400, response.statusCode());
@@ -112,8 +111,8 @@ public class RestTestRent {
         vehicleData.addVehicle(new MockCar(1.30));
     }
 
-    private static String basicAuth(String username, String password) {
-        return "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+    private static String basicAuth() {
+        return "Basic " + Base64.getEncoder().encodeToString((RestTestRent.TEST + ":" + RestTestRent.TEST).getBytes());
     }
 
     private static void addMockCustomer(CustomerDatabase customerData) throws AddressException {
@@ -123,7 +122,7 @@ public class RestTestRent {
     private static int sendGET(String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .headers("car_id", mockCarId, AUTHORIZATION, basicAuth(TEST, TEST))
+                .headers("car_id", mockCarId, AUTHORIZATION, basicAuth())
                 .GET()
                 .build();
 

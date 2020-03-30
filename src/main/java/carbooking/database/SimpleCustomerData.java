@@ -16,22 +16,7 @@ public class SimpleCustomerData implements CustomerDatabase {
     private List<Customer> customerData;
 
     public SimpleCustomerData() {
-        customerData = new LinkedList<Customer>();
-    }
-
-    public List<Customer> getAllCustomers() {
-        return customerData;
-    }
-
-    public Customer getCustomerById(String id) {
-        for(int i = 0; i < customerData.size(); i++) {
-            Customer currCustomer = customerData.get(i);
-            if (currCustomer.getId() == id) {
-                return currCustomer;
-            }
-        }
-
-        throw new NoSuchElementException();
+        customerData = new LinkedList<>();
     }
 
     public void chargeCustomer(String requestUsername, double rentalCharge) {
@@ -61,21 +46,4 @@ public class SimpleCustomerData implements CustomerDatabase {
         customerData.add(newCustomer);
     }
 
-    public Boolean checkPassword(String email, String password) {
-        for (Customer existingCustomer : customerData) {
-            if (existingCustomer.getEmail().equals(email)) {
-                if (existingCustomer.getPassword().equals(password)) {
-                    return true;
-                } else {
-                    return false;
-                }
-
-            }
-        }
-        return false;
-    }
-
-    public void removeCustomer(String id) {
-
-    }
 }

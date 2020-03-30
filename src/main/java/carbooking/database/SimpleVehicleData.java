@@ -26,14 +26,11 @@ public class SimpleVehicleData implements VehicleDatabase {
         Vehicle curr = null;
 
         for(int i = 0; i < vehicleData.size(); i++) {
-            if(vehicleData.get(i).getId() == id) {
+            if(vehicleData.get(i).getId().equals(id)) {
                 vehicleData.remove(i);
+                break;
             }
         }
-    }
-
-    public List<Vehicle> getAllVehicles() {
-        return vehicleData;
     }
 
     public JSONArray availableVehicles(double latitude, double longitude, int radius) {

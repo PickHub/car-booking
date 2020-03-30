@@ -2,7 +2,6 @@ package rest.handler;
 
 import carbooking.database.CustomerDatabase;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import org.json.JSONObject;
 
 import javax.mail.internet.AddressException;
@@ -30,7 +29,7 @@ public class CustomerHandler extends ParentHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         String requestMethod = exchange.getRequestMethod();
 
         if (POST.equals(requestMethod)) {

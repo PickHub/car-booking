@@ -3,32 +3,30 @@ package carbooking.vehicle;
 import carbooking.utils.Location;
 import org.json.JSONObject;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Created by Daniel Handloser on 26.03.2020.
  */
 public interface Vehicle {
 
-    public Boolean getIsReserved();
+    Boolean getIsReserved();
 
-    public void setIsReservedAtomic(boolean bool) throws VehicleAlreadyReservedException;
+    void setIsReservedAtomic(boolean bool) throws VehicleAlreadyReservedException;
 
-    public Boolean getIsRented();
+    Boolean getIsRented();
 
-    public void startRental(String customerUsername) throws VehicleAlreadyRentedException;
+    void startRental(String customerUsername) throws VehicleAlreadyRentedException;
 
-    public double stopRental();
+    double stopRental();
 
-    public Location locate();
+    Location locate();
 
-    public double getRentalPrice();
+    double getRentalPrice();
 
-    public String getId();
+    String getId();
 
-    public JSONObject toJson();
+    JSONObject toJson();
 
-    public String getCustomerUsername();
+    String getCustomerUsername();
 
 
 

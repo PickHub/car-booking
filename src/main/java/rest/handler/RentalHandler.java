@@ -9,12 +9,10 @@ import carbooking.vehicle.VehicleAlreadyReservedException;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.List;
 
 /**
  * Created by Daniel Handloser on 28.03.2020.
@@ -25,14 +23,9 @@ public class RentalHandler extends ParentHandler {
     private static final String LATITUDE = "latitude";
     private static final String AVAILABLE = "available";
     private static final String RESPONSE_SUCCESS = "Successfully added customer account.";
-    private static final String EMAIL_RESPONSE = "Conflict. This email address is already in use. Cannot create account.";
-    private static final String RESPONSE_PARAMETER = "Missing required parameter: name, e-mail and/or password.";
     private static final String RESPONSE_NOT_ALLOWED = "Method not allowed";
     private static final String RESPONSE_MISSING_LONG_LAT = "Missing required arguments latitude/longitude.";
     private static final String SUCCESS_MESSAGE = "OK";
-    private static final String EMAIL = "email";
-    private static final String PASSWORD = "password";
-    private static final String NAME = "name";
     private static final String AUTHORIZATION = "Authorization";
     private static final String USER_CONFLICT_MESSAGE = "This vehicle is associated with a different user.";
     private static final String RENTAL_CONFLICT_MESSAGE = "We do not have a corresponding rental on record.";
@@ -42,7 +35,6 @@ public class RentalHandler extends ParentHandler {
     private static final String INVALID_ID_MESSAGE = "Invalid id";
     private static final String VEHICLE_BOOKED_MESSAGE = "Vehicle has been reserved by someone else in the meantime";
     private static final String START = "start";
-    private static final String USERNAME = "name";
     private static final String STOP = "stop";
     private static final int SEARCH_RADIUS = 1000;
     private static final int HTTP_STATUS_CONFLICT = 409;
@@ -59,7 +51,7 @@ public class RentalHandler extends ParentHandler {
     }
 
     @Override
-    public void handle(HttpExchange exchange) throws IOException {
+    public void handle(HttpExchange exchange) {
         String requestMethod = exchange.getRequestMethod();
         String[] requestUri = String.valueOf(exchange.getRequestURI()).split("/");
         if ("GET".equals(requestMethod)) {

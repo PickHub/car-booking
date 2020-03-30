@@ -7,18 +7,16 @@ import carbooking.utils.Location;
  */
 public interface Customer {
 
-    public double getBalance();
+    double getBalance();
 
-    public void setBalance(float balance);
+    void setBalance(float balance);
 
-    public String getName();
+    String getName();
 
-    public String getEmail();
+    String getEmail();
 
-    public String getPassword();
+    String getPassword();
 
-    public String getId();
-
-    public Location locate();
+    String getId();
 
 }

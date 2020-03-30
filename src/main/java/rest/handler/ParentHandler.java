@@ -3,7 +3,6 @@ package rest.handler;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -17,19 +16,15 @@ public abstract class ParentHandler implements HttpHandler {
     private static final Charset CHARSET = StandardCharsets.UTF_8;
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
-    public abstract void handle(HttpExchange exchange) throws IOException;
+    public abstract void handle(HttpExchange exchange);
 
     JSONObject createJsonResponse(HttpExchange exchange) {
         InputStream stream = exchange.getRequestBody();
-        BufferedReader streamReader = null;
-        StringBuilder responseStrBuilder = null;
+        BufferedReader streamReader;
+        StringBuilder responseStrBuilder;
 
-        try {
-            streamReader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-            responseStrBuilder = new StringBuilder();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        streamReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        responseStrBuilder = new StringBuilder();
 
         String inputStr;
         try {
