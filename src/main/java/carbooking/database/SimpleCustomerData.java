@@ -46,4 +46,8 @@ public class SimpleCustomerData implements CustomerDatabase {
         customerData.add(newCustomer);
     }
 
+    public boolean checkPassword(String username, String password) {
+        return getCustomerByUsername(username).getPassword().equals(password);
+    }
+
 }

@@ -64,11 +64,10 @@ public class RentalHandler extends ParentHandler {
                         double longitude = Double.parseDouble(requestHeader.get(LONGITUDE).get(0));
                         JSONArray response = vehicleData.availableVehicles(latitude, longitude, SEARCH_RADIUS);
                         sendResponse(exchange, response.toString(), HTTP_STATUS_OK);
-                        return;
                     } else {
                         sendResponse(exchange, RESPONSE_MISSING_LONG_LAT, HTTP_STATUS_BAD_REQUEST);
-                        return;
                     }
+                    return;
 
                 }
                 else if(rentRequestType.equals(BLOCK)) {
@@ -116,12 +115,11 @@ public class RentalHandler extends ParentHandler {
                                 double rentalCharge = vehicleData.stopVehicleRent(vehicle.getId());
                                 customerData.chargeCustomer(requestingUser, rentalCharge);
                                 sendResponse(exchange, SUCCESS_MESSAGE, HTTP_STATUS_OK);
-                                return;
 
                             } else {
                                 sendResponse(exchange, USER_CONFLICT_MESSAGE, HTTP_STATUS_CONFLICT);
-                                return;
                             }
+                            return;
 
                         } catch (IdNotFoundException e) {
                             sendResponse(exchange, RENTAL_CONFLICT_MESSAGE, HTTP_STATUS_CONFLICT);
