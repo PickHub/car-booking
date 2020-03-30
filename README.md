@@ -30,7 +30,7 @@ Users can query two different endpoints `customer` and `rent`.
         ```
 
 ##### Rent a car
-This endpoint enables you to find cars in your surrounding, block cars, start the rental of a car, and stop renting. Authenticate with the credentials you sent to the `/customer` request.
+This endpoint enables you to find cars in your surrounding, block cars, start the rental of a car, and stop renting. Authenticate with the credentials you sent to the `/customer` request. For demonstration purposes the project is initialized with five cars around longitude and latitude 0.
 * Request: `GET /rent/available:lattitude:longitude`
     * returns all available vehicles in a 1km radius around your location (defined by latitude and longitude)
 * Request: `GET /rent/block:car_id`
