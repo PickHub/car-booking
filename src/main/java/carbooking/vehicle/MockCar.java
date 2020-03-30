@@ -20,8 +20,8 @@ public class MockCar implements Vehicle {
     private String customerUsername;
 
     public MockCar(double rentalPricePerMinute) {
-        this.isReserved.set(false);
-        this.isRented.set(false);
+        this.isReserved = new AtomicBoolean(false);
+        this.isRented = new AtomicBoolean(false);
         this.rentalPricePerMinute = rentalPricePerMinute;
         this.startOfRent = 0;
         this.customerUsername = "";

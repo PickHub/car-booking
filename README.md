@@ -15,7 +15,17 @@ The HTTP server is running on http://localhost:8000/.
 Users can query two different endpoints `customer` and `rent`. 
 
 ##### Create customer account
-* Request: `POST /customer:email:password:name`
+* Request: `POST /customer`
+    * Body
+        ```
+        {
+          u : {
+            email : [string],
+            name : [string],
+            password : [alphanumeric]
+          }
+        }
+        ```
 
 ##### Rent a car
 This endpoint enables you to find cars in your surrounding, block cars, start the rental of a car, and stop renting. Authenticate with the credentials you sent to the `/customer` request.

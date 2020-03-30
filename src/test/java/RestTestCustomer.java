@@ -6,26 +6,29 @@ import carbooking.database.CustomerDatabase;
 import carbooking.database.SimpleCustomerData;
 import carbooking.database.SimpleVehicleData;
 import carbooking.database.VehicleDatabase;
+import carbooking.vehicle.MockCar;
+import carbooking.vehicle.Vehicle;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import rest.HttpEndpoint;
 
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Flow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RestTest {
-    public static final String CUSTOMER_URL = "http://localhost:8000/customer";
+public class RestTestCustomer {
+    private static final String CUSTOMER_URL = "http://localhost:8000/customer";
+    private static final String RENT_AVAILABLE_URL = "http://localhost:8000/rent/available";
+    private static final String RENT_BLOCK_URL = "http://localhost:8000/rent/block";
+    private static final String RENT_START_URL = "http://localhost:8000/rent/start";
+    private static final String RENT_STOP_URL = "http://localhost:8000/rent/stop";
     private HttpEndpoint httpServer;
     private static HttpClient httpClient;
 
@@ -33,13 +36,14 @@ public class RestTest {
     public static void setUp() {
         CustomerDatabase customerData = new SimpleCustomerData();
         VehicleDatabase vehicleData = new SimpleVehicleData();
+        addMockVehicle(vehicleData);
         HttpEndpoint httpServer = new HttpEndpoint(customerData, vehicleData, 8000);
         httpServer.startHttpServer();
         httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .build();
-    }
 
+    }
 
     @Test
     public void testAddCustomer() throws IOException, InterruptedException {
@@ -51,7 +55,7 @@ public class RestTest {
                 .append("\"name\":\"test\"")
                 .append("}").toString();
 
-        HttpResponse<String> response = postRequest(json, CUSTOMER_URL);
+        HttpResponse<String> response = requestPOST(json, CUSTOMER_URL);
         assertEquals(200, response.statusCode());
     }
 
@@ -71,8 +75,8 @@ public class RestTest {
                 .append("\"name\":\"abc\"")
                 .append("}").toString();
 
-        postRequest(json_init, CUSTOMER_URL);
-        HttpResponse<String> response = postRequest(json_duplicate, CUSTOMER_URL);
+        requestPOST(json_init, CUSTOMER_URL);
+        HttpResponse<String> response = requestPOST(json_duplicate, CUSTOMER_URL);
         assertEquals(400, response.statusCode());
     }
 
@@ -84,18 +88,33 @@ public class RestTest {
                 .append("\"email\":\"test@abc.com\",")
                 .append("}").toString();
 
-        HttpResponse<String> response = postRequest(json, CUSTOMER_URL);
+        HttpResponse<String> response = requestPOST(json, CUSTOMER_URL);
         assertEquals(400, response.statusCode());
     }
 
-    private HttpResponse<String> postRequest(String json, String url) throws IOException, InterruptedException {
+    private HttpResponse<String> requestPOST(String json, String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .uri(URI.create(url))
-                .setHeader("User-Agent", "Java HttpClient") // add request header
+                .setHeader("User-Agent", "Java HttpClient")
                 .header("Content-Type", "application/json")
                 .build();
 
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private HttpResponse<String> requestGET(String json, String url) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .setHeader("User-Agent", "Java HttpClient")
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+
+    private static void addMockVehicle(VehicleDatabase vehicleData) {
+        Vehicle car = new MockCar(1.40);
+        vehicleData.addVehicle(car);
     }
 }

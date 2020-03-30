@@ -6,6 +6,7 @@ import carbooking.database.VehicleDatabase;
 import carbooking.vehicle.Vehicle;
 import carbooking.vehicle.VehicleAlreadyRentedException;
 import carbooking.vehicle.VehicleAlreadyReservedException;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,19 +19,33 @@ import java.util.List;
  */
 public class RentalHandler extends ParentHandler {
 
-    public static final String LONGITUDE = "longitude";
-    public static final String LATITUDE = "latitude";
-    public static final String AVAILABLE = "available";
-    public static final String RESPONSE_SUCCESS = "Successfully added customer account.";
+    private static final String LONGITUDE = "longitude";
+    private static final String LATITUDE = "latitude";
+    private static final String AVAILABLE = "available";
+    private static final String RESPONSE_SUCCESS = "Successfully added customer account.";
+    private static final String EMAIL_RESPONSE = "Conflict. This email address is already in use. Cannot create account.";
+    private static final String RESPONSE_PARAMETER = "Missing required parameter: name, e-mail and/or password.";
+    private static final String RESPONSE_NOT_ALLOWED = "Method not allowed";
+    private static final String RESPONSE_MISSING_LONG_LAT = "Missing required arguments latitude/longitude.";
+    private static final String SUCCESS_MESSAGE = "OK";
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String NAME = "name";
+    private static final String USER_CONFLICT_MESSAGE = "This vehicle is associated with a different user.";
+    private static final String RENTAL_CONFLICT_MESSAGE = "We do not have a corresponding rental on record.";
+    private static final String CAR_ID_MISSING_MESSAGE = "Please specify car_id.";
+    private static final String BLOCK = "block";
+    private static final String CAR_ID = "car_id";
+    private static final String INVALID_ID_MESSAGE = "Invalid id";
+    private static final String VEHICLE_BOOKED_MESSAGE = "Vehicle has been reserved by someone else in the meantime";
+    private static final String START = "start";
+    private static final String USERNAME = "username";
+    private static final String STOP = "stop";
     private static final int SEARCH_RADIUS = 1000;
-    public static final String EMAIL_RESPONSE = "Conflict. This email address is already in use. Cannot create account.";
-    public static final int HTTP_STATUS_CONFLICT = 409;
-    public static final String RESPONSE_PARAMETER = "Missing required parameter: name, e-mail and/or password.";
-    public static final int HTTP_STATUS_BAD_REQUEST = 400;
-    public static final int HTTP_STATUS_OK = 200;
-    public static final String RESPONSE_NOT_ALLOWED = "Method not allowed";
-    public static final int HTTP_STATUS_NOT_ALLOWED = 405;
-    public static final String RESPONSE_MISSING_LONG_LAT = "Missing required arguments latitude/longitude.";
+    private static final int HTTP_STATUS_CONFLICT = 409;
+    private static final int HTTP_STATUS_BAD_REQUEST = 400;
+    private static final int HTTP_STATUS_OK = 200;
+    private static final int HTTP_STATUS_NOT_ALLOWED = 405;
 
     private CustomerDatabase customerData;
     private VehicleDatabase vehicleData;
@@ -46,83 +61,89 @@ public class RentalHandler extends ParentHandler {
         String[] requestUri = String.valueOf(exchange.getRequestURI()).split("/");
 
         if ("GET".equals(requestMethod)) {
-            if (requestUri.length == 2) {
-                String rentRequestType = requestUri[1];
-                JSONObject jsonBody = createJsonResponse(exchange);
-
+            System.out.println("GET handler");
+            System.out.println("uri: " + String.valueOf(exchange.getRequestURI()));
+            if (requestUri.length == 3) {
+                String rentRequestType = requestUri[2];
+                Headers requestHeader = exchange.getRequestHeaders();
                 if(rentRequestType.equals(AVAILABLE)) {
-                    if (jsonBody.has(LATITUDE) && jsonBody.has(LONGITUDE)) {
-                        double latitude = jsonBody.getDouble(LATITUDE);
-                        double longitude = jsonBody.getDouble(LONGITUDE);
+                    if (requestHeader.containsKey(LATITUDE) && requestHeader.containsKey(LONGITUDE)) {
+                        double latitude = Double.parseDouble(requestHeader.get(LATITUDE).get(0));
+                        double longitude = Double.parseDouble(requestHeader.get(LONGITUDE).get(0));
                         JSONArray response = vehicleData.availableVehicles(latitude, longitude, SEARCH_RADIUS);
                         sendResponse(exchange, response.toString(), HTTP_STATUS_OK);
                         return;
                     } else {
                         sendResponse(exchange, RESPONSE_MISSING_LONG_LAT, HTTP_STATUS_BAD_REQUEST);
+                        return;
                     }
 
                 }
-                else if(rentRequestType.equals("block")) {
-                    if(jsonBody.has("car_id")) {
+                else if(rentRequestType.equals(BLOCK)) {
+                    if(requestHeader.containsKey(CAR_ID)) {
                         try {
-                            vehicleData.blockVehicle( String.valueOf(jsonBody.get("car_id")));
-                            sendResponse(exchange, "Blocked successful", HTTP_STATUS_OK);
+                            vehicleData.blockVehicle(requestHeader.get(CAR_ID).get(0));
+                            System.out.println("get 0: " + requestHeader.get(CAR_ID).get(0));
+                            sendResponse(exchange, SUCCESS_MESSAGE, HTTP_STATUS_OK);
                             return;
                         } catch (IdNotFoundException e) {
-                            sendResponse(exchange, "Invalid id", HTTP_STATUS_CONFLICT);
+                            sendResponse(exchange, INVALID_ID_MESSAGE, HTTP_STATUS_CONFLICT);
                             return;
                         } catch (VehicleAlreadyReservedException e) {
-                            sendResponse(exchange, "Vehicle has been reserved by someone else in the meantime", HTTP_STATUS_CONFLICT);
+                            sendResponse(exchange, VEHICLE_BOOKED_MESSAGE, HTTP_STATUS_CONFLICT);
                             return;
                         }
                     }
                 }
-                else if(rentRequestType.equals("start")) {
-                    if(jsonBody.has("car_id")) {
+                else if(rentRequestType.equals(START)) {
+                    if(requestHeader.containsKey(CAR_ID)) {
                         try {
-                            String username = String.valueOf(exchange.getRequestHeaders().get("username"));
-                            vehicleData.rentVehicle(String.valueOf(jsonBody.get("car_id")), username);
-                            sendResponse(exchange, "Blocked successful", HTTP_STATUS_OK);
+                            String username = String.valueOf(exchange.getRequestHeaders().get(USERNAME));
+                            vehicleData.rentVehicle(requestHeader.get(CAR_ID).get(0), username);
+                            sendResponse(exchange, SUCCESS_MESSAGE, HTTP_STATUS_OK);
                             return;
                         } catch (IdNotFoundException e) {
-                            sendResponse(exchange, "Invalid id", HTTP_STATUS_CONFLICT);
+                            sendResponse(exchange, INVALID_ID_MESSAGE, HTTP_STATUS_CONFLICT);
                             return;
                         } catch (VehicleAlreadyRentedException e) {
-                            sendResponse(exchange, "Vehicle has been rented by someone else in the meantime", HTTP_STATUS_CONFLICT);
+                            sendResponse(exchange, VEHICLE_BOOKED_MESSAGE, HTTP_STATUS_CONFLICT);
                             return;
                         }
                     }
                 }
-                else if(rentRequestType.equals("stop")) {
-                    if(jsonBody.has("car_id")) {
-                        String requestingUser = String.valueOf(exchange.getRequestHeaders().get("username"));
+                else if(rentRequestType.equals(STOP)) {
+                    if(requestHeader.containsKey(CAR_ID)) {
+                        String requestingUser = String.valueOf(exchange.getRequestHeaders().get(USERNAME));
 
                         try {
-                            Vehicle vehicle = vehicleData.getVehicleById(String.valueOf(jsonBody.get("car_id")));
+                            Vehicle vehicle = vehicleData.getVehicleById(String.valueOf(requestHeader.get(CAR_ID).get(0)));
                             String userAssociatedToVehicle = vehicle.getCustomerUsername();
 
                             if (userAssociatedToVehicle.equals(requestingUser)) {
                                 double rentalCharge = vehicleData.stopVehicleRent(vehicle.getId());
                                 customerData.chargeCustomer(requestingUser, rentalCharge);
-                                sendResponse(exchange, "Rental terminated successfully", HTTP_STATUS_OK);
+                                sendResponse(exchange, SUCCESS_MESSAGE, HTTP_STATUS_OK);
+                                return;
 
                             } else {
-                                sendResponse(exchange, "This vehicle is associated with a different user.", HTTP_STATUS_CONFLICT);
+                                sendResponse(exchange, USER_CONFLICT_MESSAGE, HTTP_STATUS_CONFLICT);
+                                return;
                             }
 
                         } catch (IdNotFoundException e) {
-                            sendResponse(exchange, "We do not have a corresponding rental on record.", HTTP_STATUS_CONFLICT);
+                            sendResponse(exchange, RENTAL_CONFLICT_MESSAGE, HTTP_STATUS_CONFLICT);
+                            return;
                         }
                     } else {
-                        sendResponse(exchange, "Please specify car_id.", HTTP_STATUS_BAD_REQUEST);
+                        sendResponse(exchange, CAR_ID_MISSING_MESSAGE, HTTP_STATUS_BAD_REQUEST);
                         return;
                     }
                 }
 
-                if (jsonBody.has("email") && jsonBody.has("password") && jsonBody.has("name")) {
-                    String email = String.valueOf(jsonBody.get("email"));
-                    String password = String.valueOf(jsonBody.get("password"));
-                    String name = String.valueOf(jsonBody.get("name"));
+          /*      if (jsonBody.has(EMAIL) && jsonBody.has(PASSWORD) && jsonBody.has(NAME)) {
+                    String email = String.valueOf(jsonBody.get(EMAIL));
+                    String password = String.valueOf(jsonBody.get(PASSWORD));
+                    String name = String.valueOf(jsonBody.get(NAME));
 
                     if (!customerData.addCustomer(email, password, name)) {
                         sendResponse(exchange, EMAIL_RESPONSE, HTTP_STATUS_CONFLICT);
@@ -133,7 +154,7 @@ public class RentalHandler extends ParentHandler {
                 } else {
                     sendResponse(exchange, RESPONSE_PARAMETER, HTTP_STATUS_BAD_REQUEST);
                     return;
-                }
+                }*/
                 sendResponse(exchange, RESPONSE_SUCCESS, HTTP_STATUS_OK);
                 return;
             }
