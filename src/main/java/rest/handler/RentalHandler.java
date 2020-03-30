@@ -22,7 +22,6 @@ public class RentalHandler extends ParentHandler {
     private static final String LONGITUDE = "longitude";
     private static final String LATITUDE = "latitude";
     private static final String AVAILABLE = "available";
-    private static final String RESPONSE_SUCCESS = "Successfully added customer account.";
     private static final String RESPONSE_NOT_ALLOWED = "Method not allowed";
     private static final String RESPONSE_MISSING_LONG_LAT = "Missing required arguments latitude/longitude.";
     private static final String SUCCESS_MESSAGE = "OK";
@@ -33,7 +32,7 @@ public class RentalHandler extends ParentHandler {
     private static final String BLOCK = "block";
     private static final String CAR_ID = "car_id";
     private static final String INVALID_ID_MESSAGE = "Invalid id";
-    private static final String VEHICLE_BOOKED_MESSAGE = "Vehicle has been reserved by someone else in the meantime";
+    private static final String VEHICLE_BOOKED_MESSAGE = "Vehicle is not available anymore.";
     private static final String START = "start";
     private static final String STOP = "stop";
     private static final int SEARCH_RADIUS = 1000;
@@ -100,6 +99,9 @@ public class RentalHandler extends ParentHandler {
                             sendResponse(exchange, VEHICLE_BOOKED_MESSAGE, HTTP_STATUS_CONFLICT);
                             return;
                         }
+                    } else {
+                        sendResponse(exchange, CAR_ID_MISSING_MESSAGE, HTTP_STATUS_BAD_REQUEST);
+                        return;
                     }
                 }
                 else if(rentRequestType.equals(STOP)) {
@@ -115,12 +117,12 @@ public class RentalHandler extends ParentHandler {
                                 double rentalCharge = vehicleData.stopVehicleRent(vehicle.getId());
                                 customerData.chargeCustomer(requestingUser, rentalCharge);
                                 sendResponse(exchange, SUCCESS_MESSAGE, HTTP_STATUS_OK);
+                                return;
 
                             } else {
                                 sendResponse(exchange, USER_CONFLICT_MESSAGE, HTTP_STATUS_CONFLICT);
+                                return;
                             }
-                            return;
-
                         } catch (IdNotFoundException e) {
                             sendResponse(exchange, RENTAL_CONFLICT_MESSAGE, HTTP_STATUS_CONFLICT);
                             return;
@@ -130,7 +132,7 @@ public class RentalHandler extends ParentHandler {
                         return;
                     }
                 }
-                sendResponse(exchange, RESPONSE_SUCCESS, HTTP_STATUS_OK);
+                sendResponse(exchange, RESPONSE_NOT_ALLOWED, HTTP_STATUS_NOT_ALLOWED);
                 return;
             }
         }

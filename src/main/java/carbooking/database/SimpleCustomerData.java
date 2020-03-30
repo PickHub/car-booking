@@ -46,7 +46,7 @@ public class SimpleCustomerData implements CustomerDatabase {
         customerData.add(newCustomer);
     }
 
-    public boolean checkPassword(String username, String password) {
+    public boolean checkPassword(String username, String password) throws NoSuchElementException {
         return getCustomerByUsername(username).getPassword().equals(password);
     }
 

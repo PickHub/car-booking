@@ -11,6 +11,8 @@ Start by importing the maven dependencies and run `src/main/java/Main.java`.
 
 The HTTP server is running on http://localhost:8000/.
 
+You will need to create an account with `POST /customer` before you can access the rest of the rental functionality.
+
 ### Endpoints
 Users can query two different endpoints `customer` and `rent`. 
 
