@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -31,6 +33,7 @@ public class RentalHandler extends ParentHandler {
     private static final String EMAIL = "email";
     private static final String PASSWORD = "password";
     private static final String NAME = "name";
+    private static final String AUTHORIZATION = "Authorization";
     private static final String USER_CONFLICT_MESSAGE = "This vehicle is associated with a different user.";
     private static final String RENTAL_CONFLICT_MESSAGE = "We do not have a corresponding rental on record.";
     private static final String CAR_ID_MISSING_MESSAGE = "Please specify car_id.";
@@ -39,7 +42,7 @@ public class RentalHandler extends ParentHandler {
     private static final String INVALID_ID_MESSAGE = "Invalid id";
     private static final String VEHICLE_BOOKED_MESSAGE = "Vehicle has been reserved by someone else in the meantime";
     private static final String START = "start";
-    private static final String USERNAME = "username";
+    private static final String USERNAME = "name";
     private static final String STOP = "stop";
     private static final int SEARCH_RADIUS = 1000;
     private static final int HTTP_STATUS_CONFLICT = 409;
@@ -59,7 +62,6 @@ public class RentalHandler extends ParentHandler {
     public void handle(HttpExchange exchange) throws IOException {
         String requestMethod = exchange.getRequestMethod();
         String[] requestUri = String.valueOf(exchange.getRequestURI()).split("/");
-        System.out.println("URI: " + String.valueOf(exchange.getRequestURI()));
         if ("GET".equals(requestMethod)) {
             if (requestUri.length == 3) {
                 String rentRequestType = requestUri[2];
@@ -95,7 +97,8 @@ public class RentalHandler extends ParentHandler {
                 else if(rentRequestType.equals(START)) {
                     if(requestHeader.containsKey(CAR_ID)) {
                         try {
-                            String username = String.valueOf(exchange.getRequestHeaders().get(USERNAME));
+                            String authorizationHeader = exchange.getRequestHeaders().get(AUTHORIZATION).get(0);
+                            String username = getUsernameFromBasicAuth(authorizationHeader);
                             vehicleData.rentVehicle(requestHeader.get(CAR_ID).get(0), username);
                             sendResponse(exchange, SUCCESS_MESSAGE, HTTP_STATUS_OK);
                             return;
@@ -110,7 +113,8 @@ public class RentalHandler extends ParentHandler {
                 }
                 else if(rentRequestType.equals(STOP)) {
                     if(requestHeader.containsKey(CAR_ID)) {
-                        String requestingUser = String.valueOf(exchange.getRequestHeaders().get(USERNAME));
+                        String authorizationHeader = exchange.getRequestHeaders().get(AUTHORIZATION).get(0);
+                        String requestingUser = getUsernameFromBasicAuth(authorizationHeader);
 
                         try {
                             Vehicle vehicle = vehicleData.getVehicleById(String.valueOf(requestHeader.get(CAR_ID).get(0)));
@@ -141,5 +145,13 @@ public class RentalHandler extends ParentHandler {
             }
         }
         sendResponse(exchange, RESPONSE_NOT_ALLOWED, HTTP_STATUS_NOT_ALLOWED);
+    }
+
+    private String getUsernameFromBasicAuth(String auth) {
+        String base64Credentials = auth.substring("Basic".length()).trim();
+        byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
+        String credentials = new String(credDecoded, StandardCharsets.UTF_8);
+        final String[] values = credentials.split(":", 2);
+        return values[0];
     }
 }

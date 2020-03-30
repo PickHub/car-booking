@@ -59,7 +59,7 @@ public class MockCar implements Vehicle {
 
     public double stopRental() {
         long rentedMinutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - startOfRent);
-        this.isReserved.set(false);
+        this.isRented.set(false);
 
         return rentedMinutes * rentalPricePerMinute;
     }

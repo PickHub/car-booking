@@ -8,6 +8,7 @@ import carbooking.database.SimpleVehicleData;
 import carbooking.database.VehicleDatabase;
 import carbooking.vehicle.MockCar;
 import carbooking.vehicle.Vehicle;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import rest.HttpEndpoint;
@@ -29,7 +30,7 @@ public class RestTestCustomer {
     private static final String RENT_BLOCK_URL = "http://localhost:8000/rent/block";
     private static final String RENT_START_URL = "http://localhost:8000/rent/start";
     private static final String RENT_STOP_URL = "http://localhost:8000/rent/stop";
-    private HttpEndpoint httpServer;
+    private static HttpEndpoint httpServer;
     private static HttpClient httpClient;
 
     @BeforeAll
@@ -37,12 +38,17 @@ public class RestTestCustomer {
         CustomerDatabase customerData = new SimpleCustomerData();
         VehicleDatabase vehicleData = new SimpleVehicleData();
         addMockVehicle(vehicleData);
-        HttpEndpoint httpServer = new HttpEndpoint(customerData, vehicleData, 8000);
+        httpServer = new HttpEndpoint(customerData, vehicleData, 8000);
         httpServer.startHttpServer();
         httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .build();
 
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        httpServer.stopHttpServer();
     }
 
     @Test
@@ -111,7 +117,6 @@ public class RestTestCustomer {
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
 
     private static void addMockVehicle(VehicleDatabase vehicleData) {
         Vehicle car = new MockCar(1.40);

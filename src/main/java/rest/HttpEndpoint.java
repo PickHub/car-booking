@@ -18,16 +18,17 @@ import rest.handler.RentalHandler;
 public class HttpEndpoint {
     private CustomerDatabase customerData;
     private VehicleDatabase vehicleData;
+    private HttpServer server;
     private int port;
 
     public HttpEndpoint(CustomerDatabase customerData, VehicleDatabase vehicleData, int port) {
         this.customerData = customerData;
         this.vehicleData = vehicleData;
         this.port = port;
+        this.server = null;
     }
 
     public void startHttpServer() {
-        HttpServer server = null;
         try {
             server = HttpServer.create(new InetSocketAddress(port), 0);
         } catch (IOException e) {
@@ -38,6 +39,12 @@ public class HttpEndpoint {
         rentContext.setAuthenticator(new CustomerAuthenticator("rent", customerData));
         server.setExecutor(null);
         server.start();
+    }
+
+    public void stopHttpServer() {
+        server.removeContext("/customer");
+        server.removeContext("/rent");
+        server.stop(0);
     }
 
 

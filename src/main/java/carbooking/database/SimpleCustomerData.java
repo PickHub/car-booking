@@ -40,10 +40,9 @@ public class SimpleCustomerData implements CustomerDatabase {
     }
 
     private Customer getCustomerByUsername(String username) throws NoSuchElementException {
-        for(int i = 0; i < customerData.size(); i++) {
-            Customer currCustomer = customerData.get(i);
-            if (currCustomer.getName() == username) {
-                return currCustomer;
+        for(Customer customer : customerData) {
+            if (customer.getName().equals(username)) {
+                return customer;
             }
         }
 

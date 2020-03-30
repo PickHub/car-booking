@@ -4,8 +4,7 @@ import carbooking.vehicle.Vehicle;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import rest.HttpEndpoint;
 
 import javax.mail.internet.AddressException;
@@ -16,8 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Base64;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by Daniel Handloser on 30.03.2020.
@@ -38,6 +36,7 @@ public class RestTestRent {
     private static CustomerDatabase customerData;
     private static VehicleDatabase vehicleData;
     private static String mockCarId;
+    private static HttpEndpoint httpServer;
 
     @BeforeAll
     public static void setUp() throws AddressException {
@@ -45,9 +44,33 @@ public class RestTestRent {
         vehicleData = new SimpleVehicleData();
         addMockVehicle(vehicleData);
         addMockCustomer(customerData);
-        HttpEndpoint httpServer = new HttpEndpoint(customerData, vehicleData, 8000);
+        httpServer = new HttpEndpoint(customerData, vehicleData, 8000);
         httpServer.startHttpServer();
         httpClient = HttpClient.newHttpClient();
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        httpServer.stopHttpServer();
+    }
+
+    @Test
+    public void testStartRent() throws IOException, InterruptedException, IdNotFoundException {
+        assertEquals(CODE_200, sendGET(RENT_START_URL));
+        assertTrue(vehicleData.getVehicleById(mockCarId).getIsRented());
+    }
+
+    @Test
+    public void testStopRent() throws IOException, InterruptedException, IdNotFoundException {
+        sendGET(RENT_START_URL);
+        assertEquals(CODE_200, sendGET(RENT_STOP_URL));
+        assertFalse(vehicleData.getVehicleById(mockCarId).getIsRented());
+    }
+
+    @Test
+    public void testStartBlockingVehicle() throws IOException, InterruptedException, IdNotFoundException {
+        assertEquals(CODE_200, sendGET(RENT_BLOCK_URL));
+        assertTrue(vehicleData.getVehicleById(mockCarId).getIsReserved());
     }
 
     @Test
@@ -82,17 +105,11 @@ public class RestTestRent {
         assertEquals(CODE_400, response.statusCode());
     }
 
-    @Test
-    public void testStartRent() throws IOException, InterruptedException, IdNotFoundException {
-        assertEquals(CODE_200, sendGET(RENT_START_URL));
-        System.out.println("mock id: " + mockCarId);
-        assertTrue(vehicleData.getVehicleById(mockCarId).getIsRented());
-    }
-
     private static void addMockVehicle(VehicleDatabase vehicleData) {
         Vehicle car = new MockCar(1.40);
         mockCarId = car.getId();
         vehicleData.addVehicle(car);
+        vehicleData.addVehicle(new MockCar(1.30));
     }
 
     private static String basicAuth(String username, String password) {
