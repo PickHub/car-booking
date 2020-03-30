@@ -7,7 +7,7 @@ REST API for a car booking system.
 * Maven
 
 ## Getting Started 
-Running...
+Start by importing the maven dependencies and run `src/main/java/Main.java`. 
 
 The HTTP server is running on http://localhost:8000/.
 

@@ -10,7 +10,6 @@ import rest.HttpEndpoint;
 public class Main {
 
     public static void main(String[] args) {
-        //TODO port in cmd
         int port = 8000;
         CustomerDatabase customerData = new SimpleCustomerData();
         VehicleDatabase vehicleData = new SimpleVehicleData();
